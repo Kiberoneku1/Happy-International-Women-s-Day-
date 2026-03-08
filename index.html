@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>С 8 Марта — маме с любовью</title>
+    <style>
+        /* ===== СБРОС И БАЗОВЫЕ НАСТРОЙКИ ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            cursor: none; /* скрываем стандартный курсор */
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, system-ui, -apple-system, sans-serif;
+            background: #fef9f7; /* тёплый светлый фон */
+            color: #3a2e2b;
+            line-height: 1.5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1rem;
+            position: relative;
+            /* Параллакс фона — три слоя двигаются с разной скоростью */
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(255, 200, 220, 0.3) 0%, transparent 25%),
+                radial-gradient(circle at 80% 70%, rgba(255, 160, 190, 0.25) 0%, transparent 30%),
+                radial-gradient(circle at 40% 80%, #ffe2ec 0%, transparent 40%),
+                repeating-linear-gradient(45deg, rgba(255, 220, 235, 0.2) 0px, rgba(255, 220, 235, 0.2) 20px, rgba(255, 240, 245, 0.4) 20px, rgba(255, 240, 245, 0.4) 40px);
+            background-blend-mode: overlay, screen, normal, normal;
+            background-size: 200% 200%, 150% 150%, 100% 100%, auto;
+            animation: floatBackground 20s infinite alternate ease-in-out;
+            transition: background-position 0.1s ease-out; /* для микро-параллакса от мыши */
+        }
+
+        /* Параллакс-слои (дополнительный эффект при движении мыши) */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 50% 50%, rgba(255, 220, 240, 0.15) 0%, transparent 60%);
+            pointer-events: none;
+            z-index: -1;
+            transition: transform 0.08s ease-out;
+            will-change: transform;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"><circle cx="30" cy="30" r="6" fill="%23ffb6c1" opacity="0.2"/><circle cx="15" cy="45" r="8" fill="%23ff99aa" opacity="0.2"/><circle cx="48" cy="12" r="10" fill="%23ffc0cb" opacity="0.2"/></svg>');
+            background-size: 180px 180px;
+            opacity: 0.4;
+            pointer-events: none;
+            z-index: -1;
+            transform: translateZ(0);
+            will-change: transform;
+            transition: transform 0.1s ease;
+        }
+
+        @keyframes floatBackground {
+            0% { background-position: 0% 0%, 0% 0%, 0% 0%, 0 0; }
+            100% { background-position: 5% 5%, -3% -2%, 2% 3%, 0 0; }
+        }
+
+        /* ===== КАСТОМНЫЙ КУРСОР-СЕРДЕЧКО ===== */
+        .heart-cursor {
+            width: 32px;
+            height: 32px;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            transition: transform 0.05s linear, filter 0.2s;
+            filter: drop-shadow(0 0 8px rgba(255, 105, 180, 0.6));
+            animation: cursorGlow 1.5s infinite alternate;
+            will-change: left, top, filter;
+        }
+
+        .heart-cursor svg {
+            display: block;
+            width: 100%;
+            height: 100%;
+            fill: url(#gradHeart);
+        }
+
+        @keyframes cursorGlow {
+            0% { filter: drop-shadow(0 0 5px #ff9eb5) drop-shadow(0 0 10px #ffb3c6); }
+            100% { filter: drop-shadow(0 0 15px #ff4d6d) drop-shadow(0 0 25px #ffb3c6); }
+        }
+
+        /* невидимый элемент для хранения градиента */
+        .cursor-svg-defs {
+            position: absolute;
+            width: 0; height: 0;
+        }
+
+        /* ===== ОСНОВНОЙ КОНТЕНТ ===== */
+        h1 {
+            font-size: clamp(2.2rem, 8vw, 3.5rem);
+            font-weight: 700;
+            background: linear-gradient(135deg, #d44e6c, #b34168, #d1627a);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 0.5rem;
+            text-align: center;
+            text-shadow: 2px 2px 10px rgba(255, 140, 170, 0.3);
+            animation: titleFloat 3s infinite alternate ease-in-out;
+            transform-style: preserve-3d;
+        }
+
+        @keyframes titleFloat {
+            0% { transform: translateY(0) scale(1); }
+            100% { transform: translateY(-8px) scale(1.02); }
+        }
+
+        p {
+            font-size: 1.4rem;
+            color: #5e4b4a;
+            max-width: 600px;
+            text-align: center;
+            margin: 1rem 0 2rem;
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(4px);
+            padding: 0.8rem 2rem;
+            border-radius: 60px;
+            box-shadow: 0 8px 20px rgba(255, 190, 200, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+        }
+
+        /* карточки с параллакс-эффектом на hover */
+        .card-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            justify-content: center;
+            margin: 2.5rem 0;
+            perspective: 800px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(8px);
+            border-radius: 42px;
+            padding: 2.5rem 2rem;
+            width: 280px;
+            box-shadow: 0 25px 40px -10px rgba(200, 100, 120, 0.4),
+                        0 0 0 2px rgba(255, 255, 255, 0.8) inset;
+            border: 1px solid rgba(255, 230, 235, 0.9);
+            transition: box-shadow 0.3s, transform 0.1s ease; /* плавность для параллакса */
+            transform-style: preserve-3d;
+            will-change: transform;
+            text-align: center;
+        }
+
+        .card h3 {
+            font-size: 2.2rem;
+            font-weight: 600;
+            color: #ad3f64;
+            margin-bottom: 1.2rem;
+            transform: translateZ(15px); /* легкий 3D-эффект внутри карточки */
+        }
+
+        .card p {
+            font-size: 1.2rem;
+            background: transparent;
+            backdrop-filter: none;
+            box-shadow: none;
+            border: none;
+            padding: 0;
+            margin: 0;
+            color: #543b3a;
+            transform: translateZ(10px);
+        }
+
+        .card:hover {
+            box-shadow: 0 40px 60px -8px #ffb6c1, 0 0 0 3px rgba(255, 255, 255, 0.9) inset;
+        }
+
+        /* кнопка с сюрпризом */
+        button {
+            background: linear-gradient(145deg, #ff8da1, #ffb3c6);
+            border: none;
+            padding: 1.2rem 3.5rem;
+            border-radius: 50px;
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: #4d2e32;
+            box-shadow: 0 10px 20px #ffb8c9, 0 4px 0 #bd6a7a, 0 0 0 2px #ffeef2 inset;
+            cursor: none;
+            transition: all 0.2s ease;
+            margin: 2rem 0 1rem;
+            letter-spacing: 1px;
+            transform-style: preserve-3d;
+            will-change: transform;
+            border: 1px solid rgba(255, 255, 255, 0.7);
+        }
+
+        button:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 18px 30px #ffa5b8, 0 6px 0 #a15b68, 0 0 0 3px #ffffff inset;
+            background: linear-gradient(145deg, #ff97ad, #ffc1d1);
+        }
+
+        button:active {
+            transform: translateY(2px);
+            box-shadow: 0 6px 12px #f28b9f, 0 2px 0 #8d4e58;
+        }
+
+        .srp {
+            min-height: 120px;
+            margin-top: 30px;
+            font-size: 2rem;
+            font-weight: 500;
+            color: #c64774;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            transition: all 0.3s;
+        }
+
+        .surprise-emoji {
+            font-size: 3.5rem;
+            filter: drop-shadow(0 8px 12px #ffafc0);
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0) rotate(-10deg); opacity: 0; }
+            80% { transform: scale(1.2) rotate(3deg); }
+            100% { transform: scale(1) rotate(0); opacity: 1; }
+        }
+
+        /* эффект плавного появления */
+        .fade-element {
+            animation: fadeUp 0.8s forwards;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* подпись */
+        .footer-note {
+            margin-top: 3rem;
+            color: #98707c;
+            font-size: 1rem;
+            opacity: 0.7;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- скрытый SVG-градиент для курсора (переливание цветов) -->
+    <div class="cursor-svg-defs">
+        <svg xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="gradHeart" x1="0%" y1="0%" x2="100%" y2="100%" gradientTransform="rotate(45)">
+                    <stop offset="0%" stop-color="#ff4d6d">
+                        <animate attributeName="stop-color" values="#ff4d6d;#ff9eb5;#ff4d6d" dur="2s" repeatCount="indefinite" />
+                    </stop>
+                    <stop offset="50%" stop-color="#ffb3c6">
+                        <animate attributeName="stop-color" values="#ffb3c6;#ff4d6d;#ffb3c6" dur="2.3s" repeatCount="indefinite" />
+                    </stop>
+                    <stop offset="100%" stop-color="#ffacc7">
+                        <animate attributeName="stop-color" values="#ffacc7;#ffc1d1;#ffacc7" dur="1.8s" repeatCount="indefinite" />
+                    </stop>
+                </linearGradient>
+            </defs>
+        </svg>
+    </div>
+
+    <!-- кастомный курсор-сердечко -->
+    <div class="heart-cursor" id="heartCursor">
+        <svg viewBox="0 0 24 24">
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="url(#gradHeart)"/>
+        </svg>
+    </div>
+
+    <!-- основной контент -->
+    <h1>С 8 Марта, любимая мама 🌹</h1>
+    <p>Спасибо за твою поддержку и понимание</p>
+
+    <div class="card-container">
+        <div class="card" id="card1">
+            <h3>🌷 Маме</h3>
+            <p>Поздравляю с 8 марта,<br>самая лучшая мама!</p>
+        </div>
+        <!-- Можно добавить еще карточек, но для примера оставим одну, но с параллаксом -->
+    </div>
+
+    <button id="surpriseBtn">✨ Открой сюрприз ✨</button>
+    <div class="srp" id="surpriseBlock"></div>
+
+    <div class="footer-note">с любовью и нежностью</div>
+
+    <script>
+        (function() {
+            // ===== КАСТОМНЫЙ КУРСОР =====
+            const cursor = document.getElementById('heartCursor');
+            document.addEventListener('mousemove', (e) => {
+                cursor.style.left = e.clientX + 'px';
+                cursor.style.top = e.clientY + 'px';
+            });
+
+            // ===== ПАРАЛЛАКС НАВЕДЕНИЯ НА КАРТОЧКУ =====
+            const card = document.querySelector('.card'); // наша единственная карточка
+            if (card) {
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left; // координаты внутри карточки
+                    const y = e.clientY - rect.top;
+                    
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+                    
+                    // наклон: чем дальше от центра, тем сильнее (max 10deg)
+                    const rotateY = ((x - centerX) / centerX) * 8;   // от -8 до 8
+                    const rotateX = ((centerY - y) / centerY) * 8;   // от -8 до 8
+                    
+                    card.style.transform = `perspective(500px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`;
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = 'perspective(500px) rotateX(0deg) rotateY(0deg) scale(1)';
+                });
+            }
+
+            // ===== ПАРАЛЛАКС ФОНА ОТ ДВИЖЕНИЯ МЫШИ =====
+            const body = document.body;
+            const bgLayer1 = document.querySelector('body::before'); // псевдоэлемент, но напрямую не выберешь, будем менять переменные или style
+            // Вместо псевдоэлемента используем inline-стили на body для динамики градиентов?
+            // Добавим обработчик движения мыши для смещения теней
+            document.addEventListener('mousemove', (e) => {
+                // Получаем проценты положения мыши относительно окна
+                const mouseX = e.clientX / window.innerWidth; // 0..1
+                const mouseY = e.clientY / window.innerHeight;
+
+                // Смещаем background-position для создания параллакса (разные слои)
+                const moveX1 = 10 * (mouseX - 0.5); // -5 .. 5
+                const moveY1 = 10 * (mouseY - 0.5);
+                const moveX2 = 20 * (mouseX - 0.5);
+                const moveY2 = 20 * (mouseY - 0.5);
+
+                // Применяем к body background-position (первые два слоя двигаются сильнее)
+                body.style.backgroundPosition = 
+                    `${50 + moveX1}% ${50 + moveY1}%, ${60 + moveX2}% ${40 + moveY2}%, 0% 0%, 0 0`;
+                
+                // эффект смещения псевдо-элемента ::before через трансформацию (нельзя напрямую, но можно еще один слой сделать)
+                // Можно использовать дополнительный абсолютный слой, но мы уже использовали before/after. Применим трансформацию к before стили через CSS переменную?
+                // Проще: управлять трансформацией before через additional div? Но стили уже есть. Для чистоты создадим эффект на before и after через JS-управление стилями вставленными?
+                // Однако у нас before и after используются, но мы можем динамически менять их трансформацию через добавление style в head?
+                // Не будем усложнять: управляем через добавление data-атрибута и дополнительный элемент, либо оставим только backgroundPosition для body.
+                // Создадим дополнительный слой параллакса через отдельный div? Нет, лучше просто создадим иллюзию через изменение background-position у body, что уже сделано.
+                // Также управляем смещением after
+                // Для after можно попробовать изменить transform через CSS-переменную, но проще не делать.
+                // Сделаем дополнительный живой параллакс через отдельный div внутри body? Но код должен быть компактным.
+                // Ладно, добавим изменение background-position для псевдоэлемента косвенно? никак. Поэтому удовлетворимся параллаксом на body.
+            });
+
+            // ===== КНОПКА СЮРПРИЗ =====
+            const surpriseBtn = document.getElementById('surpriseBtn');
+            const surpriseBlock = document.getElementById('surpriseBlock');
+            const surprises = [
+                '🌸', '🌼', '💐', '🎀', '💖', '🌟', '✨', '🌺', '🥰', '💝',
+                '💐 С 8 Марта!', '🌷 будь счастлива!', '🍫 цветы и конфеты', '☀️ тепла', '💞 нежности'
+            ];
+
+            surpriseBtn.addEventListener('click', () => {
+                surpriseBlock.innerHTML = ''; // очистка
+                for (let i = 0; i < 6; i++) {
+                    const randomIndex = Math.floor(Math.random() * surprises.length);
+                    const span = document.createElement('span');
+                    span.className = 'surprise-emoji';
+                    span.textContent = surprises[randomIndex] + ' ';
+                    span.style.animationDelay = (i * 0.1) + 's';
+                    surpriseBlock.appendChild(span);
+                }
+                // дополнительное сердечко
+                const heartSpan = document.createElement('span');
+                heartSpan.className = 'surprise-emoji';
+                heartSpan.textContent = '❤️‍🔥';
+                heartSpan.style.animationDelay = '0.3s';
+                surpriseBlock.appendChild(heartSpan);
+
+                // маленькая анимация на кнопке
+                surpriseBtn.style.transform = 'scale(0.95)';
+                setTimeout(() => surpriseBtn.style.transform = '', 150);
+            });
+
+            // эффект появления контента (лёгкая анимация)
+            document.querySelectorAll('h1, p, .card, button, .footer-note').forEach(el => {
+                el.classList.add('fade-element');
+            });
+
+            // переливание курсора — уже есть благодаря анимации градиента в svg
+
+            // добавим плавное появление сердечек на фоне? но не обязательно
+        })();
+    </script>
+</body>
+</html>
